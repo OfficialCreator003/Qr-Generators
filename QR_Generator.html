@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>QR Code Generator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0f0f0;
+      padding: 40px;
+      text-align: center;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+    }
+
+    input, button {
+      padding: 10px;
+      margin: 10px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      width: 300px;
+      max-width: 90%;
+    }
+
+    input[type="color"], input[type="file"] {
+      width: auto;
+    }
+
+    button {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    #qr-container {
+      margin-top: 30px;
+    }
+
+    canvas {
+      margin-top: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+    }
+  </style>
+</head>
+<body>
+
+  <h1>QR Code Generator with Logo & Colors</h1>
+
+  <input type="text" id="url" placeholder="Enter website URL (e.g. https://yourdomain.com)" />
+
+  <br>
+  Foreground: <input type="color" id="color-dark" value="#000000" />
+  Background: <input type="color" id="color-light" value="#ffffff" />
+  <br>
+  <label>Upload Logo:</label>
+  <input type="file" id="logo" accept="image/*" />
+  <br>
+
+  <button onclick="generateQR()">Generate QR Code</button>
+  <button id="downloadBtn" onclick="downloadQR()" style="display:none;">Download QR</button>
+
+  <div id="qr-container"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/qr-code-styling@1.5.0/lib/qr-code-styling.js"></script>
+  <script>
+    let qrCode;
+
+    function generateQR() {
+      const url = document.getElementById("url").value.trim();
+      const colorDark = document.getElementById("color-dark").value;
+      const colorLight = document.getElementById("color-light").value;
+      const logoInput = document.getElementById("logo");
+      const qrContainer = document.getElementById("qr-container");
+      const downloadBtn = document.getElementById("downloadBtn");
+
+      // Reset previous
+      qrContainer.innerHTML = "";
+      downloadBtn.style.display = "none";
+
+      if (!url || !/^https?:\/\//i.test(url)) {
+        alert("Please enter a valid URL starting with http:// or https://");
+        return;
+      }
+
+      qrCode = new QRCodeStyling({
+        width: 300,
+        height: 300,
+        data: url,
+        type: "canvas",
+        image: "",
+        dotsOptions: {
+          color: colorDark,
+          type: "rounded"
+        },
+        backgroundOptions: {
+          color: colorLight
+        },
+        imageOptions: {
+          crossOrigin: "anonymous",
+          margin: 10
+        }
+      });
+
+      // Handle logo upload if provided
+      if (logoInput.files.length > 0) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          qrCode.update({ image: e.target.result });
+          qrCode.append(qrContainer);
+          downloadBtn.style.display = "inline-block";
+        };
+        reader.onerror = function () {
+          alert("Failed to load logo image.");
+        };
+        reader.readAsDataURL(logoInput.files[0]);
+      } else {
+        qrCode.append(qrContainer);
+        downloadBtn.style.display = "inline-block";
+      }
+    }
+
+    function downloadQR() {
+      if (qrCode) {
+        qrCode.download({
+          name: "custom-qr-code",
+          extension: "png"
+        });
+      }
+    }
+  </script>
+
+</body>
+</html>
