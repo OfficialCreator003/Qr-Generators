@@ -1,0 +1,16 @@
+# QR Code Generator Web App Requirements
+
+# Frontend Technologies
+HTML5
+CSS3
+JavaScript (ES6)
+
+# External Library
+qr-code-styling (via CDN)
+https://unpkg.com/qr-code-styling@1.6.0/lib/qr-code-styling.js
+
+# Browser Requirements
+Modern Web Browser (Chrome, Edge, Firefox)
+
+# Optional
+Internet connection (for CDN loading)
